@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.brand-name {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.button-container {
+    display: flex;
+    gap: 20px;
+}
+
+.main-button {
+    display: inline-block;
+    padding: 15px 30px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #3498db;
+    border-radius: 8px;
+    font-size: 1.2em;
+    text-align: center;
+}
+.clickable-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    background-color: #3498db;
+    color: #fff;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.clickable-button:hover {
+    background-color: #2980b9;
+}
+
+.clickable-button:active {
+    transform: scale(0.95);
+}
