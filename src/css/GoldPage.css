@@ -19,13 +19,21 @@ body{
     padding: 10px;
     background-color: #FFFBF5;
     border-radius: 15px;
+    height: 15rem;
 }
 .f4{
     margin-top: 0.2rem;
     padding: 10px;
     background-color: #FFFBF5;
     border-radius: 15px;
+    display: flex;
 }
+.modeofpayment,
+.payable {
+    flex: 1; /* Equal width */
+    /* You can adjust flex values or set fixed widths as needed */
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -47,7 +55,4 @@ tr:nth-child(even) {
 
 .sino{
     width:2px;
-}
-.nettotal{
-    margin-left: 80rem;
 }

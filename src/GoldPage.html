@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gold Ornaments</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="GoldPage.css">
+    <link rel="stylesheet" href="./css/GoldPage.css">
 </head>
 <body>
     <div class="f1">
         <label for="">Name</label>
         <input type="text" id="Name">
         <label for="">Phone No.</label>
-        <input type="text" id="PhNo">
+        <input type="number" id="PhNo">
         <label for="">Aadhar</label>
-        <input type="text" id="Aadhar">
+        <input type="number" id="Aadhar">
         <label for="">Address</label>
         <input type="text" id="addr">
         <label for="">Bill No</label>
@@ -43,87 +43,6 @@
                     <td><input type="number" id="cgst1" disabled></td>
                     <td><input type="number" id="net1"></td>
                 </tr>
-                <!-- <tr>
-                    <td class="sino">2</td>
-                    <td><input type="text" id="orna2"></td>
-                    <td><input type="text" id="wei2"></td>
-                    <td><input type="text" id="mc2"></td>
-                    <td><input type="text" id="sgst2"></td>
-                    <td><input type="text" id="cgst2"></td>
-                    <td><input type="text" id="net2"></td>>
-                </tr>
-                <tr>
-                    <td class="sino">3</td>
-                    <td><input type="text" id="orna3"></td>
-                    <td><input type="text" id="wei3"></td>
-                    <td><input type="text" id="mc3"></td>
-                    <td><input type="text" id="sgst3"></td>
-                    <td><input type="text" id="cgst3"></td>
-                    <td><input type="text" id="net3"></td>
-                </tr>
-                <tr>
-                    <td class="sino">4</td>
-                    <td><input type="text" id="orna4"></td>
-                    <td><input type="text" id="wei4"></td>
-                    <td><input type="text" id="mc4"></td>
-                    <td><input type="text" id="sgst4"></td>
-                    <td><input type="text" id="cgst4"></td>
-                    <td><input type="text" id="net4"></td>
-                </tr>
-                <tr>
-                    <td class="sino">5</td>
-                    <td><input type="text" id="orna5"></td>
-                    <td><input type="text" id="wei5"></td>
-                    <td><input type="text" id="mc5"></td>
-                    <td><input type="text" id="sgst5"></td>
-                    <td><input type="text" id="cgst5"></td>
-                    <td><input type="text" id="net5"></td>
-                </tr>
-                <tr>
-                    <td class="sino">6</td>
-                    <td><input type="text" id="orna6"></td>
-                    <td><input type="text" id="wei6"></td>
-                    <td><input type="text" id="mc6"></td>
-                    <td><input type="text" id="sgst6"></td>
-                    <td><input type="text" id="cgst6"></td>
-                    <td><input type="text" id="net6"></td>
-                </tr>
-                <tr>
-                    <td class="sino">7</td>
-                    <td><input type="text" id="orna7"></td>
-                    <td><input type="text" id="wei7"></td>
-                    <td><input type="text" id="mc7"></td>
-                    <td><input type="text" id="sgst7"></td>
-                    <td><input type="text" id="cgst7"></td>
-                    <td><input type="text" id="net7"></td>
-                </tr>
-                <tr>
-                    <td class="sino">8</td>
-                    <td><input type="text" id="orna8"></td>
-                    <td><input type="text" id="wei8"></td>
-                    <td><input type="text" id="mc8"></td>
-                    <td><input type="text" id="sgst8"></td>
-                    <td><input type="text" id="cgst8"></td>
-                    <td><input type="text" id="net8"></td>
-                </tr>
-                <tr>
-                    <td class="sino">9</td>
-                    <td><input type="text" id="orna9"></td>
-                    <td><input type="text" id="wei9"></td>
-                    <td><input type="text" id="mc9"></td>
-                    <td><input type="text" id="sgst9"></td>
-                    <td><input type="text" id="cgst9"></td>
-                    <td><input type="text" id="net9"></td>
-                </tr>
-                <tr>
-                    <td class="sino">10</td>
-                    <td><input type="text" id="orna10"></td>
-                    <td><input type="text" id="wei10"></td>
-                    <td><input type="text" id="mc10"></td>
-                    <td><input type="text" id="sgst10"></td>
-                    <td><input type="text" id="cgst10"></td>
-                    <td><input type="text" id="net10"></td>
-                </tr> -->
             </tbody>
         </table>
     </div>
@@ -133,55 +52,74 @@
                 <tr>
                     <th class="sino">Si No</th>
                     <th>Old Ornamennt</th>
-                    <th>Weight</th>
-                    <th>Purity</th>
                     <th>Total</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td class="sino">1</td>
-                    <td><input type="text" id="oldorn1"></td>
-                    <td><input type="text" id="oldwe1"></td>
-                    <td><input type="text" id="pur1"></td>
-                    <td><input type="text" id="total1"></td>
+                    <td>
+                        <form id="myForm">
+                            <select id="addodeduct1" name="selectOption">
+                                <option value="Old Ornament">Old Ornament</option>
+                                <option value="Additional Charges">Additional Charges</option>
+                            </select>
+                        </form>              
+                     </td>
+                    <td><input type="text" id="addtotal1"></td>
                 </tr>
                 <tr>
                     <td class="sino">2</td>
-                    <td><input type="text" id="oldorn2"></td>
-                    <td><input type="text" id="oldwe2"></td>
-                    <td><input type="text" id="pur2"></td>
-                    <td><input type="text" id="total2"></td>
+                    <td>
+                        <form id="myForm">
+                            <select id="addodeduct2" name="selectOption">
+                                <option value="Old Ornament">Old Ornament</option>
+                                <option value="Additional Charges">Additional Charges</option>
+                            </select>
+                        </form>  
+                    </td>
+                    <td><input type="text" id="addtotal2"></td>
                 </tr>
                 <tr>
                     <td class="sino">3</td>
-                    <td><input type="text" id="oldorn3"></td>
-                    <td><input type="text" id="oldwe3"></td>
-                    <td><input type="text" id="pur3"></td>
-                    <td><input type="text" id="total3"></td>
+                    <td>
+                        <form id="myForm">
+                            <select id="addodeduct3" name="selectOption">
+                                <option value="Old Ornament">Old Ornament</option>
+                                <option value="Additional Charges">Additional Charges</option>
+                            </select>
+                        </form> 
+                    </td>
+                    <td><input type="text" id="addtotal3"></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div class="f4">
-        <label>Mode of Payment:</label>
-        <input type="radio" id="java" name="language" value="java">
-        <label for="java">Credit</label>
+        <div class="modeofpayment">
+            <label>Mode of Payment:</label>
+            <form id="myForm">
+                <select id="mode" name="selectOption">
+                    <option value="credit">credit</option>
+                    <option value="debit">debit</option>
+                    <option value="cash">cash</option>
+                </select>
+            </form> 
+        </div>
+        
+        <div class="payable">
+            <Label class="TotalPayableLable">NetTotal : </Label>
+            <input type="number" id="TotalPayableinput" disabled>
+        </div>
+    </div>
 
-        <input type="radio" id="python" name="language" value="python">
-        <label for="python">Debit</label>
-
-        <input type="radio" id="javascript" name="language" value="javascript">
-        <label for="javascript">Cash</label>
-
-        <Label class="nettotal">NetTotal : </Label>
-        <Label>100000</Label>
-        <br>
-        <button>Save</button>
-        <button>GST Report</button>
+    <div id="endBtn">
+        <button id="saveBill">Save</button>
+        <button id="gstReport">GST Report</button>
         <a href="mainpage.html">Home</a>
     </div>
-    <script src="GoldPage.js"></script>
+    
+    <script src="./js/GoldPage.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
