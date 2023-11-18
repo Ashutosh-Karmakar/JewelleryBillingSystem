@@ -6,15 +6,12 @@ let mc = [];
 let cgst = [];
 let sgst = [];
 var newsalerow = 1;
-
 let custName = document.getElementById("Name")
 let custPhno = document.getElementById("PhNo")
 let custadhr = document.getElementById("Aadhar")
 let custaddr = document.getElementById("addr")
-
 var tableBody = document.getElementById('newSale');
 var newRowAdded = [];
-
 let orn1 = document.getElementById("orna1");
 let netTotal1 = document.getElementById("net1");
 let wt1 = document.getElementById("wei1");
@@ -22,6 +19,8 @@ let mc1 = document.getElementById("mc1");
 let cgst1 = document.getElementById("cgst1");
 let sgst1 = document.getElementById("sgst1");
 const payableinput = document.getElementById("TotalPayableinput");
+var adddropdowns = [];
+var addamts = [];
 
 orn.push(orn1);
 wt.push(wt1);
@@ -29,7 +28,12 @@ mc.push(mc1);
 cgst.push(cgst1);
 sgst.push(sgst1);
 netTotal.push(netTotal1);
-
+adddropdowns.push(document.getElementById("addodeduct1"));
+addamts.push(document.getElementById("addtotal1"));
+adddropdowns.push(document.getElementById("addodeduct2"));
+addamts.push(document.getElementById("addtotal2"));
+adddropdowns.push(document.getElementById("addodeduct3"));
+addamts.push(document.getElementById("addtotal3"));
 
 function getTabNumber(element){
     return parseInt(element[element.length-1]) - 1;
@@ -43,7 +47,141 @@ document.body.addEventListener('keydown', function(event){
     }
 })
 
-function calculate(){
+document.getElementById("saveBill").addEventListener("click", () => {
+    sendCustData();
+    sendItemData();
+    sendadditionalData();
+    sendModeNTotal();
+ });
+
+ document.getElementById("gstReport").addEventListener("click", () => {
+    clear();
+ });
+
+
+
+
+
+var sendCustData = async () => {
+    if(custName.value === "" || custPhno.value === "" || custadhr.value === "" || custaddr.value === ""){
+        return;
+    }
+    await bridge.saveCustomer({
+        custdata : {
+            name: custName.value,
+            phno: custPhno.value,
+            adhr: custadhr.value,
+            addr: custaddr.value
+        }
+    });
+}
+
+ var sendItemData = async () => {
+    var itemData = {
+        orna : [],
+        wgt  : [],
+        mrc   : [],
+        cgt : [],
+        sgt : [],
+        net  : []
+    }
+
+    for(let i=0; i<netTotal.length; i++){
+        if(orn[i].value === "" || wt[i].value === "" 
+            || mc[i].value === "" || cgst[i].value === "" || sgst[i].value === "" || netTotal[i].value === ""){
+                break;
+        }
+        console.log(orn[i].value);
+        itemData.orna.push(orn[i].value);
+        itemData.wgt.push(wt[i].value);
+        itemData.mrc.push(mc[i].value);
+        itemData.cgt.push(cgst[i].value);
+        itemData.sgt.push(sgst[i].value);
+        itemData.net.push(netTotal[i].value);
+    }
+    await bridge.saveItemDetails({
+        itemData
+    });
+ }
+ 
+ const sendadditionalData = async () => {
+    var additionalData = {
+        additiontype : [],
+        additionamt  : []
+    }
+    for(let i=0; i<addamts.length; i++){
+        if(addamts[i].value === ""){
+            break;
+        }
+        additionalData.additiontype.push(adddropdowns[i].value);
+        additionalData.additionamt.push(addamts[i].value);
+    }
+    await bridge.saveadditionalDetails({
+        additionalData
+    });
+ }
+ 
+ const sendModeNTotal = async () => {
+    await bridge.sendModeNTotal({
+        modeNTotal : {
+            mode  : document.getElementById("mode").value,
+            total : payableinput.value
+        }
+    });
+ }
+
+ let clear = () => {
+    orn.push(orn1);
+    wt.push(wt1);
+    mc.push(mc1);
+    cgst.push(cgst1);
+    sgst.push(sgst1);
+    netTotal.push(netTotal1);
+
+    orn[0].value      = "";
+    wt[0].value       = "";
+    mc[0].value       = "";
+    cgst[0].value     = "";
+    sgst[0].value     = "";
+    netTotal[0].value = "";
+
+    custName.value = "";
+    custPhno.value = "";
+    custadhr.value = "";
+    custaddr.value = "";
+
+    newRowAdded.forEach(function (row) {
+        tableBody.removeChild(row);
+    });
+    newsalerow = 1
+    payableinput.value = "";
+ }
+
+ const additionalCalc = () => {
+    let payable = payableinput.value;
+    if(payable === ""){
+        return;
+    }
+    payable = parseInt(payable);
+    let focusedelement = document.activeElement;
+    if(!focusedelement.id.includes("addtotal")){
+        return;
+    }
+
+
+    var oprid = parseInt(focusedelement.id[focusedelement.id.length - 1]) - 1;
+    if(adddropdowns[oprid].value === "Old Ornament"){
+        let addamt = parseInt(addamts[oprid].value);
+        payable = payable - addamt;
+    }
+    else if(adddropdowns[oprid].value === "Additional Charges"){
+        let addamt = parseInt(addamts[oprid].value);
+        payable = payable + addamt;
+    }
+    payableinput.value = payable;
+ }
+
+ function calculate(){
     let focusedelement = document.activeElement;
     if(!focusedelement.id.includes("net")){
         return;
@@ -89,12 +227,12 @@ function calculate(){
         payableinput.value = "";
         payableinput.value = totalPayable + amt;
     }
-    creatTR();
+    createNewSaleInputs();
     orn[oprid+1].focus();
 }
 
 
-function creatTR(){
+function createNewSaleInputs(){
     newsalerow++;
     var newRow = document.createElement('tr');
 
@@ -160,147 +298,3 @@ function creatTR(){
     newRowAdded.push(newRow);
 
 }
-
-document.getElementById("saveBill").addEventListener("click", () => {
-    sendCustData();
-    sendItemData();
-    sendadditionalData();
-    sendModeNTotal();
- });
-
-var sendCustData = async () => {
-    if(custName.value === "" || custPhno.value === "" || custadhr.value === "" || custaddr.value === ""){
-        return;
-    }
-    await bridge.saveCustomer({
-        custdata : {
-            name: custName.value,
-            phno: custPhno.value,
-            adhr: custadhr.value,
-            addr: custaddr.value
-        }
-    });
-}
-
- var sendItemData = async () => {
-    var itemData = {
-        orna : [],
-        wgt  : [],
-        mrc   : [],
-        cgt : [],
-        sgt : [],
-        net  : []
-    }
-
-    for(let i=0; i<netTotal.length; i++){
-        if(orn[i].value === "" || wt[i].value === "" 
-            || mc[i].value === "" || cgst[i].value === "" || sgst[i].value === "" || netTotal[i].value === ""){
-                break;
-        }
-        console.log(orn[i].value);
-        itemData.orna.push(orn[i].value);
-        itemData.wgt.push(wt[i].value);
-        itemData.mrc.push(mc[i].value);
-        itemData.cgt.push(cgst[i].value);
-        itemData.sgt.push(sgst[i].value);
-        itemData.net.push(netTotal[i].value);
-    }
-    await bridge.saveItemDetails({
-        itemData
-    });
- }
-
-
- let clear = () => {
-    orn.push(orn1);
-    wt.push(wt1);
-    mc.push(mc1);
-    cgst.push(cgst1);
-    sgst.push(sgst1);
-    netTotal.push(netTotal1);
-
-    orn[0].value      = "";
-    wt[0].value       = "";
-    mc[0].value       = "";
-    cgst[0].value     = "";
-    sgst[0].value     = "";
-    netTotal[0].value = "";
-
-    custName.value = "";
-    custPhno.value = "";
-    custadhr.value = "";
-    custaddr.value = "";
-
-    newRowAdded.forEach(function (row) {
-        tableBody.removeChild(row);
-    });
-    newsalerow = 1
-    payableinput.value = "";
- }
-
- document.getElementById("gstReport").addEventListener("click", () => {
-    clear();
- });
-
-
-var adddropdowns = [];
-var addamts = [];
-
-adddropdowns.push(document.getElementById("addodeduct1"));
-addamts.push(document.getElementById("addtotal1"));
-
-adddropdowns.push(document.getElementById("addodeduct2"));
-addamts.push(document.getElementById("addtotal2"));
-
-adddropdowns.push(document.getElementById("addodeduct3"));
-addamts.push(document.getElementById("addtotal3"));
-
- const additionalCalc = () => {
-    let payable = payableinput.value;
-    if(payable === ""){
-        return;
-    }
-    payable = parseInt(payable);
-    let focusedelement = document.activeElement;
-    if(!focusedelement.id.includes("addtotal")){
-        return;
-    }
-
-
-    var oprid = parseInt(focusedelement.id[focusedelement.id.length - 1]) - 1;
-    if(adddropdowns[oprid].value === "Old Ornament"){
-        let addamt = parseInt(addamts[oprid].value);
-        payable = payable - addamt;
-    }
-    else if(adddropdowns[oprid].value === "Additional Charges"){
-        let addamt = parseInt(addamts[oprid].value);
-        payable = payable + addamt;
-    }
-    payableinput.value = payable;
- }
-
-
- const sendadditionalData = async () => {
-    var additionalData = {
-        additiontype : [],
-        additionamt  : []
-    }
-    for(let i=0; i<addamts.length; i++){
-        if(addamts[i].value === ""){
-            break;
-        }
-        additionalData.additiontype.push(adddropdowns[i].value);
-        additionalData.additionamt.push(addamts[i].value);
-    }
-    await bridge.saveadditionalDetails({
-        additionalData
-    });
- }
- const sendModeNTotal = async () => {
-    await bridge.sendModeNTotal({
-        modeNTotal : {
-            mode  : document.getElementById("mode").value,
-            total : payableinput.value
-        }
-    });
- }

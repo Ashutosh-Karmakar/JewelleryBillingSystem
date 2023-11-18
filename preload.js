@@ -6,5 +6,10 @@ contextBridge.exposeInMainWorld("bridge", {
     saveItemDetails: (itemData) => ipcRenderer.invoke("saveItemDetails", itemData),
     saveadditionalDetails: (additionalData) => ipcRenderer.invoke("sendadditionalData", additionalData),
     sendModeNTotal: (modeNTotal) => ipcRenderer.invoke("sendModeNTotal", modeNTotal),
+
+    sendGroupData: (groupData) => ipcRenderer.invoke("sendGroupData", groupData),
+    sendinventoryData: (inventoryData) => ipcRenderer.invoke("sendinventoryData", inventoryData),
+
 });
+
 

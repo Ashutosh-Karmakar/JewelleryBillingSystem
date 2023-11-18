@@ -1,5 +1,7 @@
 var rownumber = 0;
 var addButton = document.getElementById("add");
+var clearButton = document.getElementById("clear");
+
 var catinput = document.getElementById("catinput");
 var wtinput = document.getElementById("wtinput");
 var qtyinput = document.getElementById("qtyinput");
@@ -15,7 +17,17 @@ document.body.addEventListener('keydown', function(event){
     }
 });
 
-addButton.addEventListener('click', logAddition);
+addButton.addEventListener('click', async () => {
+    await bridge.sendinventoryData({
+        inventoryData : {
+            category : catinput.value,
+            weight: wtinput.value,
+            qty: qtyinput.value
+        }
+    });
+    logAddition();
+});
+clearButton.addEventListener('click', clear);
 
 function logAddition(){
     let wt = wtinput.value;
@@ -55,17 +67,15 @@ function logAddition(){
     cell4.appendChild(lable);
     newRow.appendChild(cell4);
 
-    
-    lable = document.createElement('lable');
-    lable.textContent = "2023/09/11";
-    cell5.appendChild(lable);
-    newRow.appendChild(cell5);
-
     tableBody.appendChild(newRow);
 
+    clear();
+
+}
+
+function clear() {
     catinput.value = "";
     wtinput.value = "";
     qtyinput.value = "";
     catinput.focus();
-
 }

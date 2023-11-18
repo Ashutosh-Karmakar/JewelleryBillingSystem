@@ -26,6 +26,8 @@ function createWindow() {
     ipcMain.handle('saveItemDetails', saveItemDetails);
     ipcMain.handle('sendadditionalData', sendadditionalData);
     ipcMain.handle('sendModeNTotal', sendModeNTotal);
+    ipcMain.handle('sendGroupData', sendGroupData);
+    ipcMain.handle('sendinventoryData', sendinventoryData);
 
 
     win.loadFile('src/mainpage.html');
@@ -69,5 +71,16 @@ let sendadditionalData = (request, additionalData) => {
 let sendModeNTotal = (request, modeNTotal) => {
     console.log("sendModeNTotal");
     console.log(modeNTotal);
+}
+
+let sendGroupData = (request, groupData) => {
+    console.log("sendGroupData");
+    console.log(groupData);
+}
+
+
+let sendinventoryData = (request, inventoryData) => {
+    console.log("sendinventoryData");
+    console.log(inventoryData);
 }
 
