@@ -1,15 +1,12 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
-var mySql = require("mysql");
-const connection = mySql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "1234",
-    database: "db",
-    auth_plugin: "mysql_native_password"
-
-});;
+const path                            = require('path');
+var mySql                             = require("mysql");
+var CustMod                           = require("./modules/customerModel");
+var AddMod                            = require("./modules/additionalModule");
+var BillMod                           = require("./modules/billModule");
+var ItemMod                           = require("./modules/itemCheckoutModule");
 let win;
+
 function createWindow() {
     win = new BrowserWindow({
         width: 1800,
@@ -21,14 +18,7 @@ function createWindow() {
             enableRemoteModule: true,
         }
     });
-    ipcMain.handle('dbConnection', dbConnection);
-    ipcMain.handle('saveCustomer', saveCustomer);
-    ipcMain.handle('saveItemDetails', saveItemDetails);
-    ipcMain.handle('sendadditionalData', sendadditionalData);
-    ipcMain.handle('sendModeNTotal', sendModeNTotal);
-    ipcMain.handle('sendGroupData', sendGroupData);
-    ipcMain.handle('sendinventoryData', sendinventoryData);
-
+    ipcMain.handle('SendData', SendData);
 
     win.loadFile('src/mainpage.html');
     // win.setFullScreen(true);
@@ -40,37 +30,28 @@ app.on('window-all-closed', () => {
     if(process.platform !== 'darwin') app.quit();
 })
 
-let dbConnection = () => {
-    connection.connect((err) => {
-        if(err){
-            return console.log(err);
-        }
-        console.log("Connection Successfull");
-    });
-    //execution of querries
-    // connection.end(() => {
-    //     console.log("Conenction is ended here");
-    // })
-};
 
-let saveCustomer = (request, custData) => {
-    console.log("saveCustomer");
-    console.log(custData);
-}
-
-let saveItemDetails = (request, itemData) => {
-    console.log("saveItemDetails");
-    console.log(itemData);
-}
-
-let sendadditionalData = (request, additionalData) => {
-    console.log("additionalData");
-    console.log(additionalData);
-}
-
-let sendModeNTotal = (request, modeNTotal) => {
-    console.log("sendModeNTotal");
-    console.log(modeNTotal);
+async function SendData(request, custdata, itemData , additionalData, modeNTotal){
+    console.log("sendDatat");
+    // get the billid
+    var billId = await BillMod.FindBillNo();
+    console.log(billId);
+    //get customer id
+    var custId = await CustMod.Find(custdata);
+    console.log(custId);
+    //if not add customer and then get a id
+    if(custId == 0){
+        await CustMod.Create(custdata);
+    }
+    // Create a bill with nofitemas and customer id
+    var noOfEntries = itemData.orna.length;
+    await BillMod.CreateBillNoItemCustID(noOfEntries, custId);
+    // insert the itemcheckout details
+    await ItemMod.Create(noOfEntries, billId, itemData);
+    // insert the additionaldatat into the db
+    await AddMod.Create(billId, additionalData);
+    // insert mode and total in db
+    await BillMod.UpdateModeNTotal(billId, modeNTotal);
 }
 
 let sendGroupData = (request, groupData) => {
@@ -78,9 +59,7 @@ let sendGroupData = (request, groupData) => {
     console.log(groupData);
 }
 
-
 let sendinventoryData = (request, inventoryData) => {
     console.log("sendinventoryData");
     console.log(inventoryData);
 }
-
