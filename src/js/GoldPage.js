@@ -47,11 +47,13 @@ document.body.addEventListener('keydown', function(event){
     }
 })
 
+
 document.getElementById("saveBill").addEventListener("click", () => {
-    sendCustData();
-    sendItemData();
-    sendadditionalData();
-    sendModeNTotal();
+    // sendCustData();
+    // sendItemData();
+    // sendadditionalData();
+    // sendModeNTotal();
+    callingmainmethod();
  });
 
  document.getElementById("gstReport").addEventListener("click", () => {
@@ -60,23 +62,16 @@ document.getElementById("saveBill").addEventListener("click", () => {
 
 
 
-
-
-var sendCustData = async () => {
+ var callingmainmethod = async () => {
     if(custName.value === "" || custPhno.value === "" || custadhr.value === "" || custaddr.value === ""){
         return;
     }
-    await bridge.saveCustomer({
-        custdata : {
-            name: custName.value,
-            phno: custPhno.value,
-            adhr: custadhr.value,
-            addr: custaddr.value
-        }
-    });
-}
-
- var sendItemData = async () => {
+    let custdata = {
+        name: custName.value,
+        phno: custPhno.value,
+        adhr: custadhr.value,
+        addr: custaddr.value
+    }
     var itemData = {
         orna : [],
         wgt  : [],
@@ -99,12 +94,7 @@ var sendCustData = async () => {
         itemData.sgt.push(sgst[i].value);
         itemData.net.push(netTotal[i].value);
     }
-    await bridge.saveItemDetails({
-        itemData
-    });
- }
- 
- const sendadditionalData = async () => {
+
     var additionalData = {
         additiontype : [],
         additionamt  : []
@@ -116,20 +106,14 @@ var sendCustData = async () => {
         additionalData.additiontype.push(adddropdowns[i].value);
         additionalData.additionamt.push(addamts[i].value);
     }
-    await bridge.saveadditionalDetails({
-        additionalData
-    });
+
+    let modeNTotal = {
+        mode  : document.getElementById("mode").value,
+        total : payableinput.value
+    }
+    await bridge.SendData(custdata, itemData, additionalData, modeNTotal);
  }
  
- const sendModeNTotal = async () => {
-    await bridge.sendModeNTotal({
-        modeNTotal : {
-            mode  : document.getElementById("mode").value,
-            total : payableinput.value
-        }
-    });
- }
-
  let clear = () => {
     orn.push(orn1);
     wt.push(wt1);
@@ -248,13 +232,27 @@ function createNewSaleInputs(){
     cell1.innerText= newsalerow;
     cell1.id = "sino";
     newRow.appendChild(cell1);
-    
-    let input = document.createElement('input');
-    input.type = 'text';
-    input.id = "orna" + String(newsalerow);
-    cell2.appendChild(input);
+    var data = ["GRing", "SRing", "GChain"];
+
+    let ornaDropdown = document.createElement('select');
+    ornaDropdown.id = "orna" + String(newsalerow);
+    data.forEach(d => {
+        const option = document.createElement('option');
+        option.value = d; // Assuming each fruit has an ID
+        option.textContent = d;
+        ornaDropdown.appendChild(option);
+    });
+    cell2.appendChild(ornaDropdown);
     newRow.appendChild(cell2);
-    orn.push(input);
+    orn.push(ornaDropdown);
+
+
+    // let input = document.createElement('input');
+    // input.type = 'text';
+    // input.id = "orna" + String(newsalerow);
+    // cell2.appendChild(input);
+    // newRow.appendChild(cell2);
+    // orn.push(input);
     
     input = document.createElement('input');
     input.type = 'number';

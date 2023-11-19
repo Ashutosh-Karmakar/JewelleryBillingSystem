@@ -2,11 +2,11 @@ var rownumber = 0;
 var addButton = document.getElementById("add");
 var clearButton = document.getElementById("clear");
 
-var catinput = document.getElementById("catinput");
+var catDropdown = document.getElementById("catDropdown");
 var wtinput = document.getElementById("wtinput");
 var qtyinput = document.getElementById("qtyinput");
 
-catinput.focus();
+catDropdown.focus();
 
 document.body.addEventListener('keydown', function(event){
     if(event.key == "Enter"){
@@ -20,7 +20,7 @@ document.body.addEventListener('keydown', function(event){
 addButton.addEventListener('click', async () => {
     await bridge.sendinventoryData({
         inventoryData : {
-            category : catinput.value,
+            category : catDropdown.value,
             weight: wtinput.value,
             qty: qtyinput.value
         }
@@ -32,7 +32,7 @@ clearButton.addEventListener('click', clear);
 function logAddition(){
     let wt = wtinput.value;
     let qty = qtyinput.value;
-    let cat = catinput.value;
+    let cat = catDropdown.value;
 
     if(wt == "" || qty == "" || cat == ""){
         console.error("The values are empty");
@@ -74,8 +74,22 @@ function logAddition(){
 }
 
 function clear() {
-    catinput.value = "";
+    catDropdown.value = "";
     wtinput.value = "";
     qtyinput.value = "";
-    catinput.focus();
+    catDropdown.focus();
+}
+document.addEventListener('DOMContentLoaded', populateParentDropDown );
+
+function populateParentDropDown(){
+    var data = ["GRing", "SRing", "GChain"];
+    const dropdown = document.getElementById('catDropdown');
+
+
+    data.forEach(d => {
+        const option = document.createElement('option');
+        option.value = d; // Assuming each fruit has an ID
+        option.textContent = d;
+        dropdown.appendChild(option);
+    });
 }
