@@ -1,4 +1,6 @@
 
-//  document.getElementById("Connection").addEventListener("click", async () => {
-//     await bridge.dbConnection();
-//  });
+document.body.addEventListener('keydown', function(event){
+    if(event.key === "Escape"){
+        window.close();
+    }
+});

@@ -11,7 +11,7 @@
     <div class="container">
         <div>
             <table>
-                <tablebody>
+                <tbody>
                     <tr>
                         <td>
                             <label for="Group Name">Group Name</label>
@@ -25,11 +25,11 @@
                             <label for="Parent Group">Parent</label>
                         </td>
                         <td>
-                            <input class="inputs" type="text" name="parentGroup" id="Parentinput">
+                            <input class="inputs" type="text" name="parentGroup" value="Primary" id="Parentinput" disabled>
                         </td>
                     </tr>
                     
-                </tablebody>
+                </tbody>
             </table>
             <button class="btn" id="add">Add</button>
             <!-- <button class="btn"  id="modify">Modify</button> -->
@@ -40,20 +40,15 @@
         </div>
         <div class="createdGroup">
             <table>
-                <tablehead>
+                <thead>
                     <tr>
                         <th>Group Name</th>
                         <th>Parent Group</th>
                     </tr>
-                </tablehead>
-                <tablebody>
-                    <td>
-                        ashu
-                    </td>
-                    <td>
-                        ashu
-                    </td>
-                </tablebody>
+                </thead>
+                <tbody id="groups">
+
+                </tbody>
             </table>
         </div>
     </div>
