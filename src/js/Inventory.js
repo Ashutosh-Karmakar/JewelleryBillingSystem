@@ -1,40 +1,84 @@
-var rownumber = 0;
-var addButton = document.getElementById("add");
-var clearButton = document.getElementById("clear");
+var rownumber               = 0;
+var addButton               = document.getElementById("add");
+var clearButton             = document.getElementById("clear");
+var refreshBtn              = document.getElementById("refresh");
 
-var catDropdown = document.getElementById("catDropdown");
-var wtinput = document.getElementById("wtinput");
-var qtyinput = document.getElementById("qtyinput");
+var catDropdown             = document.getElementById("catDropdown");
+var wtinput                 = document.getElementById("wtinput");
+var qtyinput                = document.getElementById("qtyinput");
+var inventoryDate           = [];
+var categoryDict            = {};
 
 catDropdown.focus();
+
+window.addEventListener("DOMContentLoaded", async () => {
+    let groups = [];
+    // await bridge.populateCategory();
+
+    const fileName = "../data/inventoryData.csv";
+    await fetch(fileName)
+        .then(res => {
+        return res.text();
+        }).then(data => {
+            data = data.split('-');
+            data.forEach(line => {
+                let cat   = line.split(',')[0];
+                let catid = parseInt(line.split(',')[1]);
+                let wt = parseInt(line.split(',')[2]);
+                let quty = parseInt(line.split(',')[3]);
+                if(cat != ""){
+                    inventoryDate.push({
+                        category : cat,
+                        id : catid,
+                        weight : wt,
+                        qty: quty
+                    });
+                    categoryDict[cat] = [catid, wt, quty];
+                }
+            });
+            inventoryDate.forEach((data) => {
+                inventoryAddition(data);
+                groups.push(data.category);
+            }); 
+              
+        });
+        await populateParentDropDown(groups);
+});
+
 
 document.body.addEventListener('keydown', function(event){
     if(event.key == "Enter"){
         let focusedelement = document.activeElement;
         if(focusedelement.id.includes("qtyinput")){
-            logAddition();
+            // inventoryAddition(d);
         }
+    }
+});
+document.body.addEventListener('keydown', function(event){
+    if(event.key === "Escape"){
+        window.location.href = "D:/cpad/BillingSystem/src/mainpage.html";
     }
 });
 
 addButton.addEventListener('click', async () => {
-    await bridge.sendinventoryData({
-        inventoryData : {
-            category : catDropdown.value,
-            weight: wtinput.value,
-            qty: qtyinput.value
-        }
-    });
+    let inventoryData = {
+        category : categoryDict[catDropdown.value][0],
+        weight: (categoryDict[catDropdown.value][1] + parseInt(wtinput.value)),
+        qty: (categoryDict[catDropdown.value][2] + parseInt(qtyinput.value))
+    }
+
+    await bridge.sendinventoryData(inventoryData);
     logAddition();
 });
+
 clearButton.addEventListener('click', clear);
 
-function logAddition(){
-    let wt = wtinput.value;
-    let qty = qtyinput.value;
-    let cat = catDropdown.value;
+function inventoryAddition(data){
+    let wt = data.weight;
+    let qty = data.qty;
+    let cat = data.category;
 
-    if(wt == "" || qty == "" || cat == ""){
+    if(wt == "" || qty == 0 || cat == 0){
         console.error("The values are empty");
         return;
     }
@@ -79,13 +123,9 @@ function clear() {
     qtyinput.value = "";
     catDropdown.focus();
 }
-document.addEventListener('DOMContentLoaded', populateParentDropDown );
 
-function populateParentDropDown(){
-    var data = ["GRing", "SRing", "GChain"];
+async function populateParentDropDown(data){
     const dropdown = document.getElementById('catDropdown');
-
-
     data.forEach(d => {
         const option = document.createElement('option');
         option.value = d; // Assuming each fruit has an ID

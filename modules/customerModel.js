@@ -39,5 +39,25 @@ module.exports = {
                 }
             })
         })
+    },
+    FindCustDetails : (phNo) => {
+        return new Promise((resolve, reject) => {
+            var Query = "Select * from Customer where PhoneNo = "+ phNo + " ;";
+
+            console.log(Query);
+            db.query(Query, (err, result) => {
+                if(err){
+                    console.log("An error in Creating Customer Data", err);
+                    reject(-1);
+                }
+                else if(result.length > 0){
+                    resolve(result[0]);
+                }
+                else{
+                    resolve(0);
+                }
+            })
+        })
     }
+
 };
