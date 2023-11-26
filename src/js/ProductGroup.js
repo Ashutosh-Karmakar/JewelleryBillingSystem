@@ -2,6 +2,7 @@ var groupName               = document.getElementById("groupNameinput");
 // var parentGroup          = document.getElementById("Parentinput");
 var tableBody               = document.getElementById("groups");
 var groups                  = [];
+// var refreshBtn = document.getElementById("refresh");
 
 window.addEventListener("DOMContentLoaded", async () => {
     await bridge.populateCategory();
@@ -24,6 +25,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     
     
 });
+
+// let refreshFunc = async () => {
+//     await bridge.populateCategory();
+// }
+
+// refreshBtn.addEventListener('click', refreshFunc);
 
 document.body.addEventListener('keydown', function(event){
     if(event.key === "Escape"){

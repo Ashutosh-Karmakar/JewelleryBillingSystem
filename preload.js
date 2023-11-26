@@ -6,7 +6,9 @@ contextBridge.exposeInMainWorld("bridge", {
     sendGroupData: (groupData) => ipcRenderer.invoke("sendGroupData", groupData),
     sendinventoryData: (inventoryData) => ipcRenderer.invoke("sendinventoryData", inventoryData),
     getCustDetails: (phNo) => ipcRenderer.invoke("getCustDetails", phNo), 
-    
+
+    something: () => ipcRenderer.invoke("something"), 
+
 
 });
 

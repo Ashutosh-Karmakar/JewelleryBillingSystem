@@ -28,6 +28,8 @@ function createWindow() {
     ipcMain.handle('sendinventoryData', sendinventoryData);
     ipcMain.handle('getCustDetails', getCustDetails);
 
+    ipcMain.handle('something', something);
+
     win.loadFile('src/mainpage.html');  
 }
 
@@ -66,9 +68,14 @@ async function SendData(request, custdata, itemData , additionalData, modeNTotal
 async function getCustDetails(request, phNo) {
     let custdetails = await CustMod.FindCustDetails(phNo);
     return custdetails;
-}
+};
 
-let populateCategory = async () => {
+function something(request) {
+    console.log("hello");
+};
+
+let populateCategory = async (request) => {
+    // console.log("hello");
     var result = await InvtMod.Read();
     let inventoryData = "";
     if(result.length == 0){
