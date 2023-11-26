@@ -45,6 +45,9 @@ window.addEventListener("DOMContentLoaded", async () => {
         await populateParentDropDown(groups);
 });
 
+let refreshFunc = async () => {
+    await bridge.populateCategory();
+}
 
 document.body.addEventListener('keydown', function(event){
     if(event.key == "Enter"){
@@ -68,10 +71,15 @@ addButton.addEventListener('click', async () => {
     }
 
     await bridge.sendinventoryData(inventoryData);
-    logAddition();
+    // inventoryData.category = catDropdown.value;
+    // inventoryAddition(inventoryData);
 });
 
 clearButton.addEventListener('click', clear);
+
+refresh.addEventListener('click', refreshFunc);
+
+
 
 function inventoryAddition(data){
     let wt = data.weight;

@@ -4,3 +4,6 @@ document.body.addEventListener('keydown', function(event){
         window.close();
     }
 });
+window.addEventListener("DOMContentLoaded", async () => {
+    await bridge.populateCategory();
+});

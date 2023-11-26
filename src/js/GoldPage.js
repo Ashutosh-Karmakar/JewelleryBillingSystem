@@ -20,10 +20,10 @@ let cgst1                   = document.getElementById("cgst1");
 let sgst1                   = document.getElementById("sgst1");
 const payableinput          = document.getElementById("TotalPayableinput");
 var adddropdowns            = [];
-var addamts                 = [];
+var addTotal                = [];
+var addNetTotal             = [];
 var categoryType            = {};
 let productWt               = [];
-
 
 orn.push(orn1);
 wt.push(wt1);
@@ -33,17 +33,20 @@ sgst.push(sgst1);
 netTotal.push(netTotal1);
 
 adddropdowns.push(document.getElementById("addodeduct1"));
-addamts.push(document.getElementById("addtotal1"));
+addTotal.push(document.getElementById("addtotal1"));
 adddropdowns.push(document.getElementById("addodeduct2"));
-addamts.push(document.getElementById("addtotal2"));
+addTotal.push(document.getElementById("addtotal2"));
 adddropdowns.push(document.getElementById("addodeduct3"));
-addamts.push(document.getElementById("addtotal3"));
+addTotal.push(document.getElementById("addtotal3"));
+
+addNetTotal.push(document.getElementById("addNetTotal1"));
+addNetTotal.push(document.getElementById("addNetTotal2"));
+addNetTotal.push(document.getElementById("addNetTotal3"));
 
 
 //behaviour on load or reload
 document.addEventListener('DOMContentLoaded', async () => {
     // await bridge.populateCategory();
-    
     const fileName = "../data/inventoryData.csv";
     await fetch(fileName)
     .then(res => {
@@ -79,6 +82,16 @@ document.body.addEventListener('keydown', async function(event){
                 custName.focus();
             }
         }
+        if(document.activeElement.id.includes("addtotal")){
+            let focusedelement = document.activeElement;
+            let index = parseInt(focusedelement.id[focusedelement.id.length - 1]) - 1;
+            if(adddropdowns[index].value == "Old Ornament"){
+                addNetTotal[index].innerText = "- " + addTotal[index].value;
+            }
+            if(adddropdowns[index].value == "Additional Charges"){
+                addNetTotal[index].innerText = "+ " + addTotal[index].value;
+            }
+        }
         calculate();
         additionalCalc();
     }
@@ -93,7 +106,21 @@ document.body.addEventListener('keydown', function(event){
 
 //behaviour on save btn click
 document.getElementById("saveBill").addEventListener("click", () => {
-    callingmainmethod();
+    let flag = true;
+    if(custName.value === "" || custPhno.value === "" || custadhr.value === "" || custaddr.value === ""){
+        // return;
+        flag = false;
+    }
+    addTotal.forEach((element) => {
+        let index = parseInt(element.id[element.id.length - 1]) - 1;
+        if(element.value != "" && addNetTotal[index].innerText == ""){
+            console.error("Enter not clicked on add total ");
+            // return;
+            flag = false;
+        }
+    })
+    if(flag)
+        callingmainmethod();
  });
 
  //behaviour on clear btn click
@@ -115,28 +142,34 @@ function addOrnmentOptions(orna1Dropdown) {
     });
 }
 
+let findPayableAmt = () => {
+    let totalpayableAmt = 0;
+    let index = 0;
+    netTotal.forEach((element) => {
+        if(mc[index].value != "") {
+            totalpayableAmt += parseInt(element.value);     
+        }
+        index++;
+    });
+    addNetTotal.forEach((element) => {
+        if(element.innerText != ""){
+            if(element.innerText.substr(0,1) == '-'){
+                totalpayableAmt -= parseInt(element.innerText.substr(2,element.innerText.length-1));
+            }
+            else{
+                totalpayableAmt += parseInt(element.innerText.substr(2,element.innerText.length-1));
+            }
+            console.log(parseInt(element.innerText));
+        }
+    });
+    return totalpayableAmt;
+}
 
  
  const additionalCalc = () => {
-    let payable = payableinput.value;
-    if(payable === ""){
+    let payable = findPayableAmt();
+    if(payable == 0){
         return;
-    }
-    payable = parseInt(payable);
-    let focusedelement = document.activeElement;
-    if(!focusedelement.id.includes("addtotal")){
-        return;
-    }
-
-
-    var oprid = parseInt(focusedelement.id[focusedelement.id.length - 1]) - 1;
-    if(adddropdowns[oprid].value === "Old Ornament"){
-        let addamt = parseInt(addamts[oprid].value);
-        payable = payable - addamt;
-    }
-    else if(adddropdowns[oprid].value === "Additional Charges"){
-        let addamt = parseInt(addamts[oprid].value);
-        payable = payable + addamt;
     }
     payableinput.value = payable;
  }
@@ -180,14 +213,9 @@ function addOrnmentOptions(orna1Dropdown) {
     mc[oprid].value = mac;
     cgst[oprid].value = cst;
     sgst[oprid].value = cst;
-    if(payableinput.value === ""){
-        payableinput.value = amt;
-    }
-    else{
-        let totalPayable = parseInt(payableinput.value);
-        payableinput.value = "";
-        payableinput.value = totalPayable + amt;
-    }
+    payableinput.value = "";
+    totalPayable = parseInt(payableinput.value);
+    payableinput.value = findPayableAmt();
     categoryType[orn[oprid].value][1] -= wgt;
     categoryType[orn[oprid].value][2] -= 1;
     productWt.push({
@@ -195,7 +223,8 @@ function addOrnmentOptions(orna1Dropdown) {
         catWt: categoryType[orn[oprid].value][1],
         catQt: categoryType[orn[oprid].value][2]
     });
-    createNewSaleInputs();
+    if(oprid == orn.length - 1)
+        createNewSaleInputs();
     orn[oprid+1].focus();
 }
 
@@ -270,9 +299,7 @@ function createNewSaleInputs(){
 
 
 var callingmainmethod = async () => {
-    if(custName.value === "" || custPhno.value === "" || custadhr.value === "" || custaddr.value === ""){
-        return;
-    }
+    
     let custdata = {
         name: custName.value,
         phno: custPhno.value,
@@ -306,12 +333,12 @@ var callingmainmethod = async () => {
         additiontype : [],
         additionamt  : []
     }
-    for(let i=0; i<addamts.length; i++){
-        if(addamts[i].value === ""){
+    for(let i=0; i<addTotal.length; i++){
+        if(addTotal[i].value === ""){
             break;
         }
         additionalData.additiontype.push(adddropdowns[i].value);
-        additionalData.additionamt.push(addamts[i].value);
+        additionalData.additionamt.push(addTotal[i].value);
     }
 
     let modeNTotal = {
