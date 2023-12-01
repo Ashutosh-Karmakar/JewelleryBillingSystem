@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pdf Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+</head>
+<body>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          
+            <td align="center" bgcolor="#ffe77b" style="background-color: #fff;">
+              <h2 style="font-weight: 900;color: brown;">Giridhari Jewellery</h2>
+              <p>Badhaikanka Chawk, Bhubaneswar, MOB - 90902800XXX, 7377736XXX<br/> 
+                916 GOLD AND SILVER Ornaments</p>
+            </td>
+        </tr>
+    </table> 
+    <h1 align="center" style="font-size: 20px;font-weight: 400; color: green; margin-top: 10px;">INVOICE</h1>
+    <div width="95%" style="border: 1px solid black;">
+    <table width="95%" border="0" cellspacing="0" cellpadding="0" >
+        <tr>
+           <td>Name : {{data.CustDetail.name}}</td>
+           <td style="border-left: 2px solid rgb(228, 226, 226);">Bill No. : {{data.BillId}}</td>
+           <td style="border-left: 2px solid rgb(228, 226, 226);">Gold Rate : {{data.GoldRate}}</td>
+        </tr>
+
+        <tr>
+            <td>Address : {{data.CustDetail.Addr}}</td>
+            <td style="border-left: 2px solid rgb(228, 226, 226);">Date : {{data.date}}</td>
+            <td style="border-left: 2px solid rgb(228, 226, 226);"></td>
+        </tr>
+
+        <tr>
+            <td style="border-bottom: 2px solid rgb(228, 226, 226);">Phone No. : {{data.CustDetail.Phno}}</td>
+            <td style="border-bottom: 2px solid rgb(228, 226, 226); border-left: 1px solid rgb(228, 226, 226); border-bottom: border-top: none;">Addhar : {{data.CustDetail.Addhr}}</td>
+            <td style="border-left: 2px solid rgb(228, 226, 226); border-bottom:  2px solid rgb(228, 226, 226);"></td>
+         </tr>
+  </table>  
+  <br><br>    
+      <table class="table" width="95%">
+          <thead>
+            <tr>
+              <th scope="col">Si</th>
+              <th scope="col">Description</th>
+              <th scope="col">HSN</th>
+              <th scope="col">Weight</th>
+              <th scope="col">MC</th>
+              <th scope="col">Cgst</th>
+              <th scope="col">Sgst</th>
+              <th scope="col">Net Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each data.ItemDetails}}
+            <tr>
+              <td width="10%">
+                {{this.si}}
+              </td>
+              <th width="10%">
+                <p>{{this.description}}</p>
+              </th>
+              <td width="10%">{{this.hsn}}</td>
+              <td width="10%">{{this.wt}}</td>
+              <td width="10%">{{this.mc}}</td>
+              <td width="10%">{{this.cgst}}</td>
+              <td width="10%">{{this.sgst}}</td>
+              <td width="10%">{{this.total}}</td>
+            </tr>
+            {{/each}}
+            <!-- <tr>
+                <td width="10%">
+                </td>
+                <th scope="row" width="30%">
+                  <h5 style="font-weight: 700;color:chocolate">NetTotal :</h5>
+                  <p></p>
+                </th>
+                <td width="10%"></td>
+                <td width="10%"></td>
+                <td width="10%"></td>
+                <td width="10%"></td>
+                <td width="10%">$21121313</td>
+              </tr> -->
+          </tbody>
+        </table>
+
+        <h3 align="center">Additional/Deductional Charges</h3>
+        <table class="table" width="95%">
+            <thead>
+              <tr>
+                <th scope="col">Si</th>
+                <th scope="col">Description</th>
+                <th scope="col">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each data.AdditionCharges}}
+              <tr>
+                <td width="10%">
+                  {{this.si}}
+                </td>
+                <th scope="row" width="30%">
+                  <p>{{this.additionalType}}</p>
+                </th>
+                <td width="10%">{{this.additionalAmt}}</td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        <table width="95%" border="0" cellspacing="0" cellpadding="0">
+          <tr style="background-color: #f6f6f6;">
+            <td width="10%">
+              
+            </td>
+            <td width="30%" style="color:darkred; background-color: #f6f6f6;">Mode Of Payment</td>
+            <td width="10%"><p style="color:#000;  padding-left: 2rem;">{{data.ModeOfPayment}}</p></td>
+          </tr>
+          <tr style="background-color: #f6f6f6;">
+            <td width="10%">
+              
+            </td>
+            <td width="30%" style="color:darkred; background-color: #f6f6f6;">Sub Total</td>
+            <td width="10%" style="background-color: lightcoral;"><p style="font-size: 25px;font-weight: 700;color:#fff; padding-left: 2rem;">{{data.NetTotal}}</p></td>
+          </tr>
+        </table>
+        <br>
+        <br><br>
+    </div>
+        <table width="95%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="100%" align="left" style="font-size: 25px;font-weight: 700;color:red; background-color: #f6f6f6;">Terms and Conditions:</td>
+          </tr>
+          <tr>
+            <td width="100%" align="left" style="font-size: 25px;font-weight: 700;color:#000; background-color: #f6f6f6;">A finance charge of 1.5% will be made on unpaid balances after 30 days.</td>
+          </tr>
+        </table>
+</body>
+</html>

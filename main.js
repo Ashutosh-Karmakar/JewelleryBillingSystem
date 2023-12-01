@@ -1,12 +1,42 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path                            = require('path');
-const mySql                           = require("mysql");
 const CustMod                         = require("./modules/customerModel");
 const AddMod                          = require("./modules/additionalModule");
 const BillMod                         = require("./modules/billModule");
 const ItemMod                         = require("./modules/itemCheckoutModule");
 const InvtMod                         = require("./modules/inventoryModule");
+const RateMod                         = require("./modules/goldRateModule");
 const fs                              = require("fs");
+var rate = 5600;
+const pdf = require('pdf-creator-node')
+
+let ornamentCategory = {};
+
+let FinalData = {};
+
+const options = require('./config/pdfFormatter')
+let billId = 0;
+
+
+const generatePDF = async (BillNo) => {
+    console.log("hello inside generate");
+    const html = fs.readFileSync(path.join(__dirname, '/views/template.html'), 'utf-8');
+    const filename = BillNo + '_doc' + '.pdf';
+      const document = {
+        html: html,
+        data : {
+            data: FinalData,
+        },
+        path: './Bills/' + filename
+    }
+    pdf.create(document, options)
+    .then(res => {
+        console.log(res)
+    }).catch(error => {
+        console.log(error)
+    });
+   
+}
 
 let win;
 
@@ -27,12 +57,15 @@ function createWindow() {
     ipcMain.handle('populateCategory', populateCategory);
     ipcMain.handle('sendinventoryData', sendinventoryData);
     ipcMain.handle('getCustDetails', getCustDetails);
+    ipcMain.handle('sendGoldRate', sendGoldRate);
 
-    ipcMain.handle('something', something);
+    win.webContents.send("getBillNo", billId);
 
     win.loadFile('src/mainpage.html');  
 }
-
+async function getBillNo() {
+    billId = await BillMod.FindBillNo();
+}
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
@@ -60,9 +93,72 @@ async function SendData(request, custdata, itemData , additionalData, modeNTotal
     //update the inventory
     await InvtMod.UpdateAfterSaleInventory(productWt);
     // insert the additionaldatat into the db
-    await AddMod.Create(billId, additionalData);
+    console.log(additionalData.additiontype.length);
+    if(additionalData.additiontype.length > 0){
+        await AddMod.Create(billId, additionalData);
+    }
     // insert mode and total in db
-    await BillMod.UpdateModeNTotal(billId, modeNTotal);    
+    await BillMod.UpdateModeNTotal(billId, modeNTotal);  
+    console.log("hello1");
+    let curdate = new Date();
+    FinalData = {
+        "date" : curdate.getDate() + " / " + (curdate.getMonth()+1) + " / " + curdate.getFullYear(),
+        "GoldRate": rate,
+        "BillId" : billId,
+        "CustDetail": {
+            "Phno": custdata.phno,
+            "name": custdata.name,
+            "Addhr": custdata.adhr,
+            "Addr": custdata.addr
+        },
+        "ItemDetails": [],
+        "AdditionCharges": [],
+        "ModeOfPayment": modeNTotal.mode,
+        "NetTotal": modeNTotal.total
+    }
+    console.log("hello2");
+    for(let i=0; i<noOfEntries; i++){
+        FinalData.ItemDetails.push({
+            "si": i+1,
+            "description": ornamentCategory[itemData.orna[i]],
+            "hsn" : 17654,
+            "wt": itemData.wgt[i],
+            "mc" : itemData.mrc[i],
+            "cgst" : itemData.cgt[i],
+            "sgst": itemData.sgt[i],
+            "total": itemData.net[i] 
+        });
+    }
+    console.log("hello3");
+    for(let i = noOfEntries; i<10 ; i++){
+        FinalData.ItemDetails.push({
+            "si": '',
+            "description": '',
+            "hsn" : '',
+            "wt": '',
+            "mc" : '',
+            "cgst" : '',
+            "sgst": '',
+            "total": '' 
+        });
+    }
+    console.log("hello4");
+    console.log(additionalData.additiontype.length);
+    for(let i=0; i<additionalData.additiontype.length; i++){
+        FinalData.AdditionCharges.push({
+        "si" : i+1,
+        "additionalType" : additionalData.additiontype[i],
+        "additionalAmt" : additionalData.additionamt[i]
+        });
+    }
+    for(let i=additionalData.additiontype.length; i<3 ; i++){
+        FinalData.AdditionCharges.push({
+            "si" : '',
+            "additionalType" : '',
+            "additionalAmt" : ''
+            });
+    }
+    generatePDF(billId);
 }
 
 async function getCustDetails(request, phNo) {
@@ -70,19 +166,25 @@ async function getCustDetails(request, phNo) {
     return custdetails;
 };
 
-function something(request) {
-    console.log("hello");
-};
+
 
 let populateCategory = async (request) => {
     // console.log("hello");
     var result = await InvtMod.Read();
+    var goldRate = await RateMod.Find();
+   
     let inventoryData = "";
+    console.log(goldRate);
+    if(goldRate.length != 0){
+        rate = goldRate[0].GoldRate;
+        inventoryData = "Rate," + rate + "-"
+    }
     if(result.length == 0){
         return;
     }
     result.forEach(element => {
         inventoryData += element.Category + "," + element.ProductID + "," + (element.Weight?element.Weight:0) + "," + (element.Quantity?element.Quantity:0) + "-"; 
+        ornamentCategory[element.ProductID] = element.Category;
     });    
     console.log(inventoryData);
     
@@ -97,6 +199,7 @@ let populateCategory = async (request) => {
 
 populateCategory();
 
+
 let sendGroupData = (request, groupData) => {
     InvtMod.Create(groupData);
 }
@@ -104,3 +207,9 @@ let sendGroupData = (request, groupData) => {
 let sendinventoryData = (request, inventoryData) => {
     InvtMod.Update(inventoryData.category, inventoryData.weight, inventoryData.qty);
 }
+
+let sendGoldRate = (request, rate) => {
+    RateMod.Create(rate);
+}
+
+

@@ -21,7 +21,8 @@ window.addEventListener("DOMContentLoaded", async () => {
         return res.text();
         }).then(data => {
             data = data.split('-');
-            data.forEach(line => {
+            for(var i=1 ; i<data.length ; i++){
+                line = data[i]
                 let cat   = line.split(',')[0];
                 let catid = parseInt(line.split(',')[1]);
                 let wt = parseInt(line.split(',')[2]);
@@ -35,7 +36,7 @@ window.addEventListener("DOMContentLoaded", async () => {
                     });
                     categoryDict[cat] = [catid, wt, quty];
                 }
-            });
+            }
             inventoryDate.forEach((data) => {
                 inventoryAddition(data);
                 groups.push(data.category);
