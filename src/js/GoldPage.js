@@ -19,12 +19,12 @@ let mc1                     = document.getElementById("mc1");
 let cgst1                   = document.getElementById("cgst1");
 let sgst1                   = document.getElementById("sgst1");
 const payableinput          = document.getElementById("TotalPayableinput");
+const rateInput             = document.getElementById("rate");
 var adddropdowns            = [];
 var addTotal                = [];
 var addNetTotal             = [];
 var categoryType            = {};
 let productWt               = [];
-
 orn.push(orn1);
 wt.push(wt1);
 mc.push(mc1);
@@ -53,7 +53,10 @@ document.addEventListener('DOMContentLoaded', async () => {
        return res.text();
     }).then(data => {
         data = data.split('-');
-        data.forEach(line => {
+        gr = parseInt(data[0].split(',')[1]);
+        rate.value = gr;
+        for(var i=1 ; i<data.length ; i++){
+            var line = data[i];
             let category   = line.split(',')[0];
             let id = parseInt(line.split(',')[1]);
             let weight = parseInt(line.split(',')[2]);
@@ -61,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if(category != "" && weight != 0 && qty != 0){
                 categoryType[category] = [id, weight, qty];
             }
-        });   
+        }   
     });    
     let orna1Dropdown = document.getElementById('orna1');
     addOrnmentOptions(orna1Dropdown);
