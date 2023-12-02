@@ -21,7 +21,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         return res.text();
         }).then(data => {
             data = data.split('-');
-            for(var i=1 ; i<data.length ; i++){
+            for(var i=1; i<data.length ; i++){
                 line = data[i]
                 let cat   = line.split(',')[0];
                 let catid = parseInt(line.split(',')[1]);
@@ -37,8 +37,8 @@ window.addEventListener("DOMContentLoaded", async () => {
                     categoryDict[cat] = [catid, wt, quty];
                 }
             }
-            inventoryDate.forEach((data) => {
-                inventoryAddition(data);
+            inventoryDate.forEach(async (data) => {
+                await inventoryAddition(data);
                 groups.push(data.category);
             }); 
               
@@ -65,13 +65,11 @@ document.body.addEventListener('keydown', function(event){
 });
 
 addButton.addEventListener('click', async () => {
-    let inventoryData = {
+    await bridge.sendinventoryData({
         category : categoryDict[catDropdown.value][0],
         weight: (categoryDict[catDropdown.value][1] + parseInt(wtinput.value)),
         qty: (categoryDict[catDropdown.value][2] + parseInt(qtyinput.value))
-    }
-
-    await bridge.sendinventoryData(inventoryData);
+    });
     // inventoryData.category = catDropdown.value;
     // inventoryAddition(inventoryData);
 });
@@ -82,7 +80,7 @@ refresh.addEventListener('click', refreshFunc);
 
 
 
-function inventoryAddition(data){
+async function inventoryAddition(data){
     let wt = data.weight;
     let qty = data.qty;
     let cat = data.category;

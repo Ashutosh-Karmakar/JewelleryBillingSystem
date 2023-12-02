@@ -8,7 +8,14 @@ const InvtMod                         = require("./modules/inventoryModule");
 const RateMod                         = require("./modules/goldRateModule");
 const fs                              = require("fs");
 var rate = 5600;
-const pdf = require('pdf-creator-node')
+const pdf = require('pdf-creator-node');
+const mongoose = require("mongoose");
+
+
+const url = "mongodb+srv://ashutoshkarmakar72:idOaNz7nCvWEmJde@jewellerybillingsystem.spl49dx.mongodb.net/";
+mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
+.then((result) => console.log("connected DB"))
+.catch((err) => console.log(err));
 
 let ornamentCategory = {};
 
@@ -69,6 +76,8 @@ async function getBillNo() {
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
+    mongoose.disconnect();
+    console.log("Disconnecting DB.....");
     if(process.platform !== 'darwin') app.quit();
 })
 
@@ -79,27 +88,31 @@ async function SendData(request, custdata, itemData , additionalData, modeNTotal
     console.log(billId);
     //get customer id
     var custId = await CustMod.Find(custdata);
+    console.log("custId");
     console.log(custId);
     //if not add customer and then get a id
     if(custId == 0){
-        await CustMod.Create(custdata);
-        var custId = await CustMod.Find(custdata);
+        var custId = await CustMod.Create(custdata);
+        // var custId = await CustMod.Find(custdata);
     }
     // Create a bill with nofitemas and customer id
     var noOfEntries = itemData.orna.length;
     await BillMod.CreateBillNoItemCustID(noOfEntries, custId);
+    console.log("Create a bill with nofitemas and customer id done");
     // insert the itemcheckout details
     await ItemMod.Create(noOfEntries, billId, itemData);
+    console.log("insert the itemcheckout details done");
     //update the inventory
     await InvtMod.UpdateAfterSaleInventory(productWt);
+    console.log("update the inventory done");
     // insert the additionaldatat into the db
-    console.log(additionalData.additiontype.length);
     if(additionalData.additiontype.length > 0){
         await AddMod.Create(billId, additionalData);
     }
+    console.log("insert the additionaldatat into the db done");
     // insert mode and total in db
     await BillMod.UpdateModeNTotal(billId, modeNTotal);  
-    console.log("hello1");
+    console.log("insert mode and total in db done");
     let curdate = new Date();
     FinalData = {
         "date" : curdate.getDate() + " / " + (curdate.getMonth()+1) + " / " + curdate.getFullYear(),
@@ -116,7 +129,6 @@ async function SendData(request, custdata, itemData , additionalData, modeNTotal
         "ModeOfPayment": modeNTotal.mode,
         "NetTotal": modeNTotal.total
     }
-    console.log("hello2");
     for(let i=0; i<noOfEntries; i++){
         FinalData.ItemDetails.push({
             "si": i+1,
@@ -129,7 +141,6 @@ async function SendData(request, custdata, itemData , additionalData, modeNTotal
             "total": itemData.net[i] 
         });
     }
-    console.log("hello3");
     for(let i = noOfEntries; i<10 ; i++){
         FinalData.ItemDetails.push({
             "si": '',
@@ -173,12 +184,12 @@ let populateCategory = async (request) => {
     var result = await InvtMod.Read();
     var goldRate = await RateMod.Find();
    
-    let inventoryData = "";
+    let inventoryData = "Rate,";
     console.log(goldRate);
     if(goldRate.length != 0){
         rate = goldRate[0].GoldRate;
-        inventoryData = "Rate," + rate + "-"
     }
+    inventoryData = inventoryData +  rate + "-";
     if(result.length == 0){
         return;
     }
@@ -205,6 +216,7 @@ let sendGroupData = (request, groupData) => {
 }
 
 let sendinventoryData = (request, inventoryData) => {
+    console.log("InvtoruDaytaUpdate");
     InvtMod.Update(inventoryData.category, inventoryData.weight, inventoryData.qty);
 }
 

@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         data = data.split('-');
         gr = parseInt(data[0].split(',')[1]);
         rate.value = gr;
-        for(var i=1 ; i<data.length ; i++){
+        for(var i=1; i<data.length ; i++){
             var line = data[i];
             let category   = line.split(',')[0];
             let id = parseInt(line.split(',')[1]);
@@ -138,10 +138,12 @@ document.getElementById("saveBill").addEventListener("click", () => {
 
 function addOrnmentOptions(orna1Dropdown) {
     Object.keys(categoryType).forEach(d => {
-        const option = document.createElement('option');
-        option.value = d;
-        option.textContent = d;
-        orna1Dropdown.appendChild(option);
+        if(categoryType[d][1] > 0 && categoryType[d][2] > 0){
+            const option = document.createElement('option');
+            option.value = d;
+            option.textContent = d;
+            orna1Dropdown.appendChild(option);
+        }
     });
 }
 
@@ -183,6 +185,7 @@ let findPayableAmt = () => {
         return;
     }
     var oprid = parseInt((focusedelementId)[focusedelementId.length-1]) - 1;
+    
     // getTabNumber(focusedelement.id);
     var wgt = wt[oprid].value;
     var amt = netTotal[oprid].value;
@@ -192,6 +195,10 @@ let findPayableAmt = () => {
     }
     wgt = parseInt(wgt);
     amt = parseInt(amt);
+    if(categoryType[orn[oprid].value][1] < wgt){
+        console.error("Insufficient Stock");
+        return;
+    }
     let cost = (amt)*(100/103);
     let cst;
     if(cost < amt){

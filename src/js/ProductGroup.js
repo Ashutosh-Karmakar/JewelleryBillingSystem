@@ -5,9 +5,9 @@ var groups                  = [];
 // var refreshBtn = document.getElementById("refresh");
 
 window.addEventListener("DOMContentLoaded", async () => {
-    await bridge.populateCategory();
+    // await bridge.populateCategory();
     const fileName = "../data/inventoryData.csv";
-    let onload = await fetch(fileName)
+    await fetch(fileName)
     .then(res => {
        return res.text();
     }).then(data => {
@@ -16,11 +16,12 @@ window.addEventListener("DOMContentLoaded", async () => {
             let key   = line.split(',')[0];
             if(key != ""){
                 groups.push(key);
+                
             }
         });   
     });
-    await groups.forEach((ele) => {
-        populateProductGroup(ele);
+    groups.forEach(async (ele) => {
+        await populateProductGroup(ele);
     })
     
     
@@ -48,7 +49,7 @@ document.getElementById("clear").addEventListener('click', () =>{
     groupName.value = "";
 });
 
-function populateProductGroup(ele) {
+async function populateProductGroup(ele) {
     let tr = document.createElement('tr');
     let td = document.createElement('td');
     td.innerText = ele;

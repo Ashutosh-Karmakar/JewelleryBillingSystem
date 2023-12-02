@@ -1,61 +1,67 @@
-const db = require("../config/connection");
+const Customer = require("../config/model/CustomerSchema");
 
 module.exports = {
     Create : (custData) => {
         return new Promise((resolve, reject) => {
-            var Query = "INSERT INTO Customer (CustName, PhoneNo, Aadhaar, Address) VALUES ('" + 
-                        custData.name+ "', " +
-                        custData.phno+ ", " +
-                        custData.adhr + ", '" +
-                        custData.addr + "');";
-            console.log(Query);
-            db.query(Query, (err, result) => {
-                if(err){
-                    console.log("An error in Creating Customer Data", err);
-                    return -1;
+            let custId = 1;
+            Customer.find().sort({_id:-1}).limit(1)
+            .then((result) => {
+                if(result.length > 0){
+                    custId = result[0].CustID + 1;
                 }
-                else{
-                    resolve(result);
-                }
+                let cust = new Customer({
+                    CustID : custId,
+                    CustName: custData.name,
+                    PhoneNo: custData.phno,
+                    Aadhaar: custData.adhr,
+                    Address: custData.addr
+                });
+                cust.save()
+                .then((result) => { 
+                    resolve(result.CustID);
+                })
+                .catch((err) => {
+                    console.log(err)
+                });
             })
+            .catch((err) => {
+                console.log(err);
+            })
+            
         })
     },
-    
     Find : (custData) => {
         return new Promise((resolve, reject) => {
-            var Query = "Select CustID from Customer where PhoneNo = "+ custData.phno + " ;";
-
-            console.log(Query);
-            db.query(Query, (err, result) => {
-                if(err){
-                    console.log("An error in Creating Customer Data", err);
-                    reject(-1);
+            let returnval = 0;
+            Customer.find({PhoneNo: custData.phno})
+            .then((result) => {
+                if(result.length > 0){
+                    returnval = result[0].CustID;
                 }
-                else if(result.length > 0){
-                    resolve(result[0].CustID);
-                }
-                else{
-                    resolve(0);
-                }
+                resolve(returnval);
             })
+            .catch((err) => {
+                console.log(err);
+                reject(-1);
+            })
+
         })
     },
     FindCustDetails : (phNo) => {
         return new Promise((resolve, reject) => {
-            var Query = "Select * from Customer where PhoneNo = "+ phNo + " ;";
-
-            console.log(Query);
-            db.query(Query, (err, result) => {
-                if(err){
-                    console.log("An error in Creating Customer Data", err);
-                    reject(-1);
+            let returnval = 0;
+            Customer.find({PhoneNo: phNo})
+            .then((result) => {
+                if(result.length > 0){
+                    console.log(result);
+                    returnval = result[0]._doc;
                 }
-                else if(result.length > 0){
-                    resolve(result[0]);
-                }
-                else{
-                    resolve(0);
-                }
+                console.log(returnval);
+                resolve(returnval);
+            })
+            .catch((err) => {
+                console.log(err);
+                reject(-1);
             })
         })
     }
